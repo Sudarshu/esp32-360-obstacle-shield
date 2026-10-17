@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ESP32 360 Obstacle Detection Protocol",
+  "version": "1.0.0",
+  "description": "Bi-directional WebSocket protocol specification for ESP32 vehicle obstacle shield and Three.js client.",
+  "messages": {
+    "telemetry": {
+      "type": "object",
+      "required": ["type", "seq", "timestamp_ms", "sweep_time_ms", "rate_hz", "sensors"],
+      "properties": {
+        "type": { "type": "string", "enum": ["telemetry"] },
+        "seq": { "type": "integer", "description": "Monotonically increasing sweep sequence counter" },
+        "timestamp_ms": { "type": "integer", "description": "ESP32 monotonic uptime in milliseconds" },
+        "sweep_time_ms": { "type": "number", "description": "Duration taken to complete this 8-channel sweep" },
+        "rate_hz": { "type": "number", "description": "Actual measured full-array sweeps per second" },
+        "temperature_c": { "type": "number", "description": "Configured ambient temperature for acoustic compensation" },
+        "simulation": { "type": "boolean", "description": "True if synthetic simulation mode is active" },
+        "sensors": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": ["id", "distance_cm", "valid", "status", "proximity"],
+            "properties": {
+              "id": { "type": "integer", "minimum": 0, "maximum": 7 },
+              "distance_cm": { "type": "number", "description": "Filtered distance in cm (null or negative if invalid)" },
+              "raw_cm": { "type": "number", "description": "Unfiltered instant reading" },
+              "pulse_us": { "type": "integer", "description": "Measured echo pulse duration in microseconds" },
+              "valid": { "type": "boolean", "description": "True if within calibrated min and max distance limits" },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ok",
+                  "timeout",
+                  "below_blindzone",
+                  "out_of_range",
+                  "hardware_error",
+                  "disabled"
+                ]
+              },
+              "proximity": {
+                "type": "string",
+                "enum": ["critical_red", "warning_yellow", "safe_green", "unknown"]
+              },
+              "consecutive_timeouts": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "heartbeat": {
+      "type": "object",
+      "required": ["type", "uptime_s", "free_heap_bytes", "wifi_rssi_dbm", "clients_connected", "firmware_version"],
+      "properties": {
+        "type": { "type": "string", "enum": ["heartbeat"] },
+        "uptime_s": { "type": "integer" },
+        "free_heap_bytes": { "type": "integer" },
+        "min_free_heap_bytes": { "type": "integer" },
+        "wifi_rssi_dbm": { "type": "integer" },
+        "clients_connected": { "type": "integer" },
+        "firmware_version": { "type": "string" },
+        "system_status": { "type": "string", "enum": ["normal", "degraded", "fault"] }
+      }
+    },
+    "client_command": {
+      "type": "object",
+      "required": ["action"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["set_simulation", "set_thresholds", "set_temperature", "ping", "request_config"]
+        },
+        "simulation_enabled": { "type": "boolean" },
+        "temperature_c": { "type": "number" },
+        "thresholds": {
+          "type": "object",
+          "properties": {
+            "red_cm": { "type": "number" },
+            "yellow_cm": { "type": "number" },
+            "green_cm": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}

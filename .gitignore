@@ -1,0 +1,26 @@
+# ESP-IDF build artifacts
+firmware/build/
+firmware/managed_components/
+firmware/dependencies.lock
+firmware/sdkconfig.old
+
+# Node modules
+web/node_modules/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Editor / IDE artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+*.log

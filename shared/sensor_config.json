@@ -1,0 +1,139 @@
+{
+  "system": {
+    "name": "Vehicle 360 Obstacle Detection Shield",
+    "version": "1.0.0",
+    "units": "cm",
+    "coordinate_system": {
+      "convention": "ISO 8855 Vehicle Local",
+      "axes": {
+        "x": "Forward (+X forward, -X rear)",
+        "y": "Left (+Y vehicle left / driver side, -Y vehicle right / passenger side)",
+        "z": "Up (+Z ground up)"
+      },
+      "angle_reference": "0 deg is along +X (straight forward), counter-clockwise positive (+90 deg is Left, 180 deg is Rear, 270 deg / -90 deg is Right)"
+    }
+  },
+  "vehicle": {
+    "model_name": "Standard Sedan / Compact SUV",
+    "length_cm": 460.0,
+    "width_cm": 185.0,
+    "height_cm": 145.0,
+    "wheelbase_cm": 270.0,
+    "front_overhang_cm": 95.0,
+    "rear_overhang_cm": 95.0,
+    "ground_clearance_cm": 16.0
+  },
+  "proximity_zones_cm": {
+    "red_critical_threshold": 60.0,
+    "yellow_warning_threshold": 150.0,
+    "green_safe_threshold": 300.0,
+    "max_detection_range": 350.0,
+    "min_detection_blindzone": 22.0
+  },
+  "acoustic_parameters": {
+    "speed_of_sound_m_s": 343.2,
+    "temperature_celsius": 20.0,
+    "us_per_cm_roundtrip": 58.275,
+    "sensor_cone_fov_deg": 60.0,
+    "measurement_timeout_ms": 25.0,
+    "inter_ping_settling_ms": 15.0
+  },
+  "sensors": [
+    {
+      "id": 0,
+      "name": "Front-Left",
+      "short_code": "FL",
+      "position_cm": { "x": 230.0, "y": 70.0, "z": 55.0 },
+      "azimuth_deg": 45.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 350.0,
+      "gpio": { "trigger": 4, "echo": 34 }
+    },
+    {
+      "id": 1,
+      "name": "Front-Center",
+      "short_code": "FC",
+      "position_cm": { "x": 230.0, "y": 0.0, "z": 55.0 },
+      "azimuth_deg": 0.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 65.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 350.0,
+      "gpio": { "trigger": 16, "echo": 35 }
+    },
+    {
+      "id": 2,
+      "name": "Front-Right",
+      "short_code": "FR",
+      "position_cm": { "x": 230.0, "y": -70.0, "z": 55.0 },
+      "azimuth_deg": -45.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 350.0,
+      "gpio": { "trigger": 17, "echo": 36 }
+    },
+    {
+      "id": 3,
+      "name": "Right-Front Side",
+      "short_code": "RFS",
+      "position_cm": { "x": 100.0, "y": -92.5, "z": 55.0 },
+      "azimuth_deg": -90.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 300.0,
+      "gpio": { "trigger": 18, "echo": 39 }
+    },
+    {
+      "id": 4,
+      "name": "Right-Rear Side",
+      "short_code": "RRS",
+      "position_cm": { "x": -100.0, "y": -92.5, "z": 55.0 },
+      "azimuth_deg": -90.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 300.0,
+      "gpio": { "trigger": 19, "echo": 32 }
+    },
+    {
+      "id": 5,
+      "name": "Rear-Right",
+      "short_code": "RR",
+      "position_cm": { "x": -230.0, "y": -70.0, "z": 55.0 },
+      "azimuth_deg": -135.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 350.0,
+      "gpio": { "trigger": 21, "echo": 33 }
+    },
+    {
+      "id": 6,
+      "name": "Rear-Left",
+      "short_code": "RL",
+      "position_cm": { "x": -230.0, "y": 70.0, "z": 55.0 },
+      "azimuth_deg": 135.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 350.0,
+      "gpio": { "trigger": 22, "echo": 25 }
+    },
+    {
+      "id": 7,
+      "name": "Left-Side",
+      "short_code": "LS",
+      "position_cm": { "x": 0.0, "y": 92.5, "z": 55.0 },
+      "azimuth_deg": 90.0,
+      "elevation_deg": 0.0,
+      "fov_deg": 60.0,
+      "blind_zone_cm": 22.0,
+      "max_range_cm": 300.0,
+      "gpio": { "trigger": 23, "echo": 26 }
+    }
+  ]
+}

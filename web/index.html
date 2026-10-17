@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vehicle 360° Obstacle Detection Shield</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas -->
+  <div id="viewport-container">
+    <canvas id="canvas-3d"></canvas>
+  </div>
+
+  <!-- Top Status & Navigation Bar -->
+  <header class="top-bar">
+    <div class="brand-section">
+      <div class="brand-logo"></div>
+      <div>
+        <div class="brand-title">360° OBSTACLE SHIELD</div>
+        <div class="brand-subtitle">ESP32 Automotive Surround Sensing</div>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="stat-chip">
+        <span>RATE:</span>
+        <span class="stat-value" id="stat-rate">0.0</span>
+        <span>Hz</span>
+      </div>
+      <div class="stat-chip">
+        <span>SEQ:</span>
+        <span class="stat-value" id="stat-seq">0</span>
+      </div>
+      <div class="badge disconnected" id="status-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">CONNECTING</span>
+      </div>
+      <button class="btn-icon" id="btn-toggle-sim" title="Toggle Synthetic Simulation Mode">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-diagnostics" title="System Diagnostics">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-settings" title="Settings & Calibration">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 3D Camera Controls -->
+  <aside class="camera-controls">
+    <button class="cam-btn active" data-view="iso">3D ISO</button>
+    <button class="cam-btn" data-view="top">TOP-DOWN</button>
+    <button class="cam-btn" data-view="chase">CHASE</button>
+    <button class="cam-btn" data-view="rotate">AUTO-ROT</button>
+    <button class="cam-btn" data-view="reset">RESET</button>
+  </aside>
+
+  <!-- Mini 2D Radar Overlay -->
+  <section class="proximity-radar">
+    <div class="radar-title">SURROUND RADAR</div>
+    <canvas id="radar-canvas" class="radar-canvas" width="110" height="110"></canvas>
+    <div class="closest-indicator">
+      CLOSEST: <span class="closest-val" id="closest-val">CLEAR</span>
+    </div>
+  </section>
+
+  <!-- Bottom Live Sensor Panels -->
+  <footer class="bottom-panel">
+    <div class="sensors-grid" id="sensors-grid">
+      <!-- Generated Dynamically by app.js -->
+    </div>
+  </footer>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Settings & Calibration</h3>
+        <button class="btn-icon" id="btn-close-settings">&times;</button>
+      </div>
+      <form id="form-settings" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Critical Red Threshold (cm)</label>
+          <input type="number" id="input-thresh-red" class="form-input" value="60" min="20" max="150" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Warning Yellow Threshold (cm)</label>
+          <input type="number" id="input-thresh-yellow" class="form-input" value="150" min="60" max="300" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Safe Green Threshold (cm)</label>
+          <input type="number" id="input-thresh-green" class="form-input" value="300" min="150" max="450" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ambient Temperature (°C - Acoustic Compensation)</label>
+          <input type="number" id="input-temp" class="form-input" value="20.0" min="-20" max="50" step="0.5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">WebSocket Host URL</label>
+          <input type="text" id="input-ws-url" class="form-input" value="ws://192.168.4.1/ws">
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top:8px;">Save Settings</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Diagnostics Modal -->
+  <div class="modal-backdrop" id="modal-diagnostics">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Firmware & Hardware Diagnostics</h3>
+        <button class="btn-icon" id="btn-close-diagnostics">&times;</button>
+      </div>
+      <div style="font-size:12px; font-family:var(--font-mono); display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+          <span>ESP32 Free Heap:</span><span id="diag-free-heap">-- KB</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+          <span>System Uptime:</span><span id="diag-uptime">-- s</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+          <span>Firmware Version:</span><span>1.0.0 (ESP-IDF v6.0.1)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+          <span>Wi-Fi Network:</span><span>SoftAP ESP32_OBSTACLE_SHIELD</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+          <span>Transducer Deadband:</span><span>22 cm Ring-Down Limit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module Entrypoint -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
