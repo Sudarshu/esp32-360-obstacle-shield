@@ -8,9 +8,29 @@
 </head>
 <body>
 
-  <!-- 3D WebGL Canvas -->
+  <!-- 3D Vehicle Viewport: Sketchfab High-Accuracy XUV 3XO + Three.js Radar Overlay -->
   <div id="viewport-container">
-    <canvas id="canvas-3d"></canvas>
+    <div class="sketchfab-embed-wrapper" id="sketchfab-wrapper">
+      <iframe 
+        id="sketchfab-iframe"
+        title="XUV 3XO" 
+        frameborder="0" 
+        allowfullscreen 
+        mozallowfullscreen="true" 
+        webkitallowfullscreen="true" 
+        allow="autoplay; fullscreen; xr-spatial-tracking" 
+        xr-spatial-tracking 
+        execution-while-out-of-viewport 
+        execution-while-not-rendered 
+        web-share 
+        src="https://sketchfab.com/models/816995d6c3454462b62c8c44ea39ae65/embed?autostart=1&ui_theme=dark">
+      </iframe>
+      <p class="sketchfab-credit">
+        <a href="https://sketchfab.com/3d-models/xuv-3xo-816995d6c3454462b62c8c44ea39ae65" target="_blank" rel="nofollow">XUV 3XO</a> by <a href="https://sketchfab.com/shreyanshchaurasia13" target="_blank" rel="nofollow">@ShreyanshChaurasia_12</a> on <a href="https://sketchfab.com" target="_blank" rel="nofollow">Sketchfab</a>
+      </p>
+    </div>
+    <!-- Three.js Sensor Cones & Acoustic Radar Mesh Canvas -->
+    <canvas id="canvas-3d" style="display:none;"></canvas>
   </div>
 
   <!-- Top Status & Navigation Bar -->
@@ -49,25 +69,33 @@
     </div>
   </header>
 
-  <!-- 3D Camera Controls & Color Picker -->
+  <!-- View Mode Switcher & 3D Controls -->
   <aside class="camera-controls">
-    <button class="cam-btn active" data-view="iso">3D ISO</button>
-    <button class="cam-btn" data-view="top">TOP-DOWN</button>
-    <button class="cam-btn" data-view="chase">REAR</button>
-    <button class="cam-btn" data-view="front">FRONT</button>
-    <button class="cam-btn" data-view="rotate">AUTO-ROT</button>
-    <button class="cam-btn" data-view="reset">RESET</button>
+    <div class="view-mode-toggle">
+      <button class="cam-btn active" id="btn-mode-sketchfab" data-mode="sketchfab" title="View Photorealistic 3D Model">3D XUV 3XO</button>
+      <button class="cam-btn" id="btn-mode-radar" data-mode="radar" title="View 3D Acoustic Sensor Radar">RADAR CONES</button>
+    </div>
 
-    <!-- Mahindra XUV 3XO Factory Color Palette -->
-    <div class="vehicle-color-palette" title="Mahindra XUV 3XO Factory Colors">
-      <span class="palette-label">3XO SHADE</span>
-      <div class="palette-dots">
-        <button class="color-dot active" data-color="#c99a3e" title="Citrine Gold (Hero)" style="background:#c99a3e;"></button>
-        <button class="color-dot" data-color="#143b2a" title="Deep Forest Green" style="background:#143b2a;"></button>
-        <button class="color-dot" data-color="#181c24" title="Stealth Black" style="background:#181c24;"></button>
-        <button class="color-dot" data-color="#b91c1c" title="Tango Red" style="background:#b91c1c;"></button>
-        <button class="color-dot" data-color="#e2e8f0" title="Everest White" style="background:#e2e8f0;"></button>
-        <button class="color-dot" data-color="#1e3a8a" title="Nebula Blue" style="background:#1e3a8a;"></button>
+    <!-- Sub-controls for Three.js Radar mode -->
+    <div id="three-cam-controls" style="display:none; flex-direction:column; gap:6px;">
+      <button class="cam-btn" data-view="iso">3D ISO</button>
+      <button class="cam-btn" data-view="top">TOP-DOWN</button>
+      <button class="cam-btn" data-view="chase">REAR</button>
+      <button class="cam-btn" data-view="front">FRONT</button>
+      <button class="cam-btn" data-view="rotate">AUTO-ROT</button>
+      <button class="cam-btn" data-view="reset">RESET</button>
+
+      <!-- Mahindra XUV 3XO Factory Color Palette -->
+      <div class="vehicle-color-palette" title="Mahindra XUV 3XO Factory Colors">
+        <span class="palette-label">3XO SHADE</span>
+        <div class="palette-dots">
+          <button class="color-dot active" data-color="#c99a3e" title="Citrine Gold (Hero)" style="background:#c99a3e;"></button>
+          <button class="color-dot" data-color="#143b2a" title="Deep Forest Green" style="background:#143b2a;"></button>
+          <button class="color-dot" data-color="#181c24" title="Stealth Black" style="background:#181c24;"></button>
+          <button class="color-dot" data-color="#b91c1c" title="Tango Red" style="background:#b91c1c;"></button>
+          <button class="color-dot" data-color="#e2e8f0" title="Everest White" style="background:#e2e8f0;"></button>
+          <button class="color-dot" data-color="#1e3a8a" title="Nebula Blue" style="background:#1e3a8a;"></button>
+        </div>
       </div>
     </div>
   </aside>
