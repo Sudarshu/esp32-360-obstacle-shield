@@ -1,4 +1,4 @@
-import { VehicleView } from "./vehicle_view.js?v=1.1.0";
+import { VehicleView } from "./vehicle_view.js?v=1.2.0";
 import { TelemetryClient } from "./telemetry.js";
 import { MockTelemetryGenerator } from "./mock_generator.js";
 

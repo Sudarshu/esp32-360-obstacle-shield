@@ -18,8 +18,8 @@ export class VehicleView {
     this.wheelbase = (this.config.vehicle?.wheelbase_cm || 260.0) / 100.0;
     this.groundClearance = (this.config.vehicle?.ground_clearance_cm || 20.1) / 100.0;
 
-    /* Vehicle Paint Shade - Default: Citrine Gold (3XO Hero Launch Shade) */
-    this.paintColor = 0xc99a3e;
+    /* Vehicle Paint Shade - Default: Everest White */
+    this.paintColor = 0xffffff;
     this.paintMaterials = [];
     
     /* Proximity Thresholds (in cm) */
@@ -88,6 +88,7 @@ export class VehicleView {
     this.paintColor = col.getHex();
     this.paintMaterials.forEach((mat) => {
       mat.color.copy(col);
+      mat.needsUpdate = true;
     });
   }
 
@@ -153,16 +154,13 @@ export class VehicleView {
             } else {
               node.castShadow = true;
               node.receiveShadow = true;
-              if (node.material) {
-                node.material.map = carTexture;
-                node.material.metalness = 0.25;
-                node.material.roughness = 0.45;
-                node.material.side = THREE.FrontSide;
-                node.material.alphaTest = 0;
-                node.material.transparent = false;
-                node.material.needsUpdate = true;
-                this.paintMaterials.push(node.material);
-              }
+              node.material = new THREE.MeshStandardMaterial({
+                color: this.paintColor || 0xffffff,
+                metalness: 0.18,
+                roughness: 0.28,
+                side: THREE.FrontSide
+              });
+              this.paintMaterials.push(node.material);
             }
           }
         });
