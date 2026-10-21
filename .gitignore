@@ -24,3 +24,6 @@ venv/
 .DS_Store
 Thumbs.db
 *.log
+
+# Raw imported 3D assets
+xuv-3xo/

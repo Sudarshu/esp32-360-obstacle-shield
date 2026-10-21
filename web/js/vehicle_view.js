@@ -1,4 +1,5 @@
 import * as THREE from "./three.module.js";
+import { GLTFLoader } from "./addons/loaders/GLTFLoader.js";
 
 /**
  * 3D Vehicle & Obstacle Visualizer
@@ -73,6 +74,7 @@ export class VehicleView {
     this.setupLighting();
     this.setupGroundAndRings();
     this.buildVehicle();
+    this.loadVehicleModel();
     this.buildSensorsAndSectors();
     this.setupInputHandlers();
     
@@ -90,29 +92,115 @@ export class VehicleView {
   }
 
   setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     this.scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xe8f0fe, 1.3);
-    dirLight.position.set(10, 16, 8);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    dirLight.shadow.camera.near = 0.5;
-    dirLight.shadow.camera.far = 30;
-    dirLight.shadow.camera.left = -6;
-    dirLight.shadow.camera.right = 6;
-    dirLight.shadow.camera.top = 6;
-    dirLight.shadow.camera.bottom = -6;
-    this.scene.add(dirLight);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    keyLight.position.set(8, 16, 10);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 1024;
+    keyLight.shadow.mapSize.height = 1024;
+    keyLight.shadow.camera.near = 0.5;
+    keyLight.shadow.camera.far = 40;
+    keyLight.shadow.camera.left = -6;
+    keyLight.shadow.camera.right = 6;
+    keyLight.shadow.camera.top = 6;
+    keyLight.shadow.camera.bottom = -6;
+    this.scene.add(keyLight);
 
-    const blueRimLight = new THREE.DirectionalLight(0x00b0ff, 0.75);
-    blueRimLight.position.set(-8, 6, -8);
-    this.scene.add(blueRimLight);
+    const frontFill = new THREE.DirectionalLight(0xe8f0fe, 1.2);
+    frontFill.position.set(0, 5, -12);
+    this.scene.add(frontFill);
 
-    const softFillLight = new THREE.DirectionalLight(0xfff3e0, 0.4);
-    softFillLight.position.set(4, 2, -10);
-    this.scene.add(softFillLight);
+    const rearFill = new THREE.DirectionalLight(0xffebee, 1.0);
+    rearFill.position.set(0, 5, 12);
+    this.scene.add(rearFill);
+
+    const leftRim = new THREE.DirectionalLight(0x00b0ff, 0.8);
+    leftRim.position.set(-10, 5, 0);
+    this.scene.add(leftRim);
+
+    const rightRim = new THREE.DirectionalLight(0x00b0ff, 0.8);
+    rightRim.position.set(10, 5, 0);
+    this.scene.add(rightRim);
+  }
+
+  loadVehicleModel(modelUrl = "./assets/models/xuv_3xo.glb") {
+    const loader = new GLTFLoader();
+    loader.load(
+      modelUrl,
+      (gltf) => {
+        while (this.vehicleGroup.children.length > 0) {
+          this.vehicleGroup.remove(this.vehicleGroup.children[0]);
+        }
+        this.paintMaterials = [];
+
+        const carModel = gltf.scene;
+
+        carModel.traverse((node) => {
+          if (node.isMesh) {
+            // Hide floating 2D watermark plane if present
+            if (node.geometry && node.geometry.attributes.position && node.geometry.attributes.position.count <= 6) {
+              node.visible = false;
+            } else {
+              node.castShadow = true;
+              node.receiveShadow = true;
+              if (node.material) {
+                this.paintMaterials.push(node.material);
+              }
+            }
+          }
+        });
+
+        // Rotate so front (+X in raw mesh) faces forward (-Z in Three.js)
+        carModel.rotation.y = Math.PI / 2;
+
+        // Measure bounding box to accurately scale to true XUV 3XO dimensions
+        const box = new THREE.Box3().setFromObject(carModel);
+        const size = box.getSize(new THREE.Vector3());
+
+        // Target length is 3.99 meters
+        const currentLength = Math.max(size.z, size.x);
+        const scale = this.carLength / currentLength;
+        carModel.scale.set(scale, scale, scale);
+
+        // Recompute bounding box after scale
+        const finalBox = new THREE.Box3().setFromObject(carModel);
+        const finalCenter = finalBox.getCenter(new THREE.Vector3());
+
+        // Center horizontally on (0, 0), and ground wheels on y = 0
+        carModel.position.x = -finalCenter.x;
+        carModel.position.z = -finalCenter.z;
+        carModel.position.y = -finalBox.min.y;
+
+        this.vehicleGroup.add(carModel);
+
+        // Add soft realistic under-car drop shadow
+        const W = this.carWidth;
+        const L = this.carLength;
+        const shadowGeo = new THREE.PlaneGeometry(W * 1.25, L * 1.15);
+        const shadowMat = new THREE.MeshBasicMaterial({
+          color: 0x000000,
+          transparent: true,
+          opacity: 0.65
+        });
+        const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+        shadowMesh.rotation.x = -Math.PI / 2;
+        shadowMesh.position.y = 0.005;
+        this.vehicleGroup.add(shadowMesh);
+
+        console.log("[VehicleView] Authentic Mahindra XUV 3XO 3D Model integrated successfully!");
+      },
+      (xhr) => {
+        if (xhr.lengthComputable) {
+          const pct = Math.round((xhr.loaded / xhr.total) * 100);
+          console.log([VehicleView] Loading 3XO Model: %);
+        }
+      },
+      (err) => {
+        console.warn("[VehicleView] GLB model load failed, using procedural fallback:", err);
+      }
+    );
   }
 
   setupGroundAndRings() {

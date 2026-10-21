@@ -166,7 +166,7 @@ class App {
         </div>
         <div class="card-body">
           <span class="card-dist" id="card-dist-${i}">---<span class="card-unit">cm</span></span>
-          <span class="card-meta" id="card-meta-${i}">-- Ãƒâ€šÃ‚Âµs</span>
+          <span class="card-meta" id="card-meta-${i}">-- ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs</span>
         </div>
       `;
       grid.appendChild(card);
@@ -208,7 +208,7 @@ class App {
           card.classList.add("status-blindzone", "prox-red");
         } else {
           statusEl.textContent = "OK";
-          metaEl.textContent = `${s.pulse_us} Ãƒâ€šÃ‚Âµs`;
+          metaEl.textContent = `${s.pulse_us} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs`;
           if (s.distance_cm <= this.view.threshRed) {
             card.classList.add("prox-red");
           } else if (s.distance_cm <= this.view.threshYellow) {

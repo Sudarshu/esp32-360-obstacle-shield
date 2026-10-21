@@ -5,12 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mahindra XUV 3XO - 360° Obstacle Detection Shield</title>
   <link rel="stylesheet" href="./css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./js/three.module.js",
+      "three/addons/": "./js/addons/"
+    }
+  }
+  </script>
 </head>
 <body>
 
-  <!-- 3D Vehicle Viewport: Sketchfab High-Accuracy XUV 3XO + Three.js Radar Overlay -->
+  <!-- 3D Vehicle Viewport: Native Three.js XUV 3XO Model + Sensor Overlay -->
   <div id="viewport-container">
-    <div class="sketchfab-embed-wrapper" id="sketchfab-wrapper">
+    <canvas id="canvas-3d"></canvas>
+
+    <!-- Sketchfab Embed (Toggleable View) -->
+    <div class="sketchfab-embed-wrapper" id="sketchfab-wrapper" style="display:none;">
       <iframe 
         id="sketchfab-iframe"
         title="XUV 3XO" 
@@ -29,8 +40,6 @@
         <a href="https://sketchfab.com/3d-models/xuv-3xo-816995d6c3454462b62c8c44ea39ae65" target="_blank" rel="nofollow">XUV 3XO</a> by <a href="https://sketchfab.com/shreyanshchaurasia13" target="_blank" rel="nofollow">@ShreyanshChaurasia_12</a> on <a href="https://sketchfab.com" target="_blank" rel="nofollow">Sketchfab</a>
       </p>
     </div>
-    <!-- Three.js Sensor Cones & Acoustic Radar Mesh Canvas -->
-    <canvas id="canvas-3d" style="display:none;"></canvas>
   </div>
 
   <!-- Top Status & Navigation Bar -->
@@ -72,13 +81,13 @@
   <!-- View Mode Switcher & 3D Controls -->
   <aside class="camera-controls">
     <div class="view-mode-toggle">
-      <button class="cam-btn active" id="btn-mode-sketchfab" data-mode="sketchfab" title="View Photorealistic 3D Model">3D XUV 3XO</button>
-      <button class="cam-btn" id="btn-mode-radar" data-mode="radar" title="View 3D Acoustic Sensor Radar">RADAR CONES</button>
+      <button class="cam-btn active" id="btn-mode-native" data-mode="native" title="Native 3D XUV 3XO + 360° Obstacle Shield">3D 3XO SHIELD</button>
+      <button class="cam-btn" id="btn-mode-sketchfab" data-mode="sketchfab" title="View Sketchfab Embed">SKETCHFAB</button>
     </div>
 
-    <!-- Sub-controls for Three.js Radar mode -->
-    <div id="three-cam-controls" style="display:none; flex-direction:column; gap:6px;">
-      <button class="cam-btn" data-view="iso">3D ISO</button>
+    <!-- 3D Camera Controls -->
+    <div id="three-cam-controls" style="display:flex; flex-direction:column; gap:6px;">
+      <button class="cam-btn active" data-view="iso">3D ISO</button>
       <button class="cam-btn" data-view="top">TOP-DOWN</button>
       <button class="cam-btn" data-view="chase">REAR</button>
       <button class="cam-btn" data-view="front">FRONT</button>
