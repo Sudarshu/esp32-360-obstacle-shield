@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Vehicle 360° Obstacle Detection Shield</title>
+  <title>Mahindra XUV 3XO - 360° Obstacle Detection Shield</title>
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -19,7 +19,7 @@
       <div class="brand-logo"></div>
       <div>
         <div class="brand-title">360° OBSTACLE SHIELD</div>
-        <div class="brand-subtitle">ESP32 Automotive Surround Sensing</div>
+        <div class="brand-subtitle">Mahindra XUV 3XO • Surround Sensing</div>
       </div>
     </div>
 
@@ -49,13 +49,27 @@
     </div>
   </header>
 
-  <!-- 3D Camera Controls -->
+  <!-- 3D Camera Controls & Color Picker -->
   <aside class="camera-controls">
     <button class="cam-btn active" data-view="iso">3D ISO</button>
     <button class="cam-btn" data-view="top">TOP-DOWN</button>
-    <button class="cam-btn" data-view="chase">CHASE</button>
+    <button class="cam-btn" data-view="chase">REAR</button>
+    <button class="cam-btn" data-view="front">FRONT</button>
     <button class="cam-btn" data-view="rotate">AUTO-ROT</button>
     <button class="cam-btn" data-view="reset">RESET</button>
+
+    <!-- Mahindra XUV 3XO Factory Color Palette -->
+    <div class="vehicle-color-palette" title="Mahindra XUV 3XO Factory Colors">
+      <span class="palette-label">3XO SHADE</span>
+      <div class="palette-dots">
+        <button class="color-dot active" data-color="#c99a3e" title="Citrine Gold (Hero)" style="background:#c99a3e;"></button>
+        <button class="color-dot" data-color="#143b2a" title="Deep Forest Green" style="background:#143b2a;"></button>
+        <button class="color-dot" data-color="#181c24" title="Stealth Black" style="background:#181c24;"></button>
+        <button class="color-dot" data-color="#b91c1c" title="Tango Red" style="background:#b91c1c;"></button>
+        <button class="color-dot" data-color="#e2e8f0" title="Everest White" style="background:#e2e8f0;"></button>
+        <button class="color-dot" data-color="#1e3a8a" title="Nebula Blue" style="background:#1e3a8a;"></button>
+      </div>
+    </div>
   </aside>
 
   <!-- Mini 2D Radar Overlay -->
@@ -120,6 +134,9 @@
         </div>
         <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
           <span>System Uptime:</span><span id="diag-uptime">-- s</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+          <span>Vehicle Model:</span><span>Mahindra XUV 3XO</span>
         </div>
         <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
           <span>Firmware Version:</span><span>1.0.0 (ESP-IDF v6.0.1)</span>

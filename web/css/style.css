@@ -507,3 +507,50 @@ body {
 .btn-primary:hover {
   opacity: 0.9;
 }
+
+
+/* Vehicle Color Palette */
+.vehicle-color-palette {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.palette-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.palette-dots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-dot:hover {
+  transform: scale(1.18);
+  border-color: #ffffff;
+}
+
+.color-dot.active {
+  border-color: #ffffff;
+  transform: scale(1.22);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}

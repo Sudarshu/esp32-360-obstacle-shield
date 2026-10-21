@@ -71,6 +71,19 @@ class App {
       });
     });
 
+    /* Vehicle Color Selector */
+    document.querySelectorAll(".color-dot").forEach((dot) => {
+      dot.addEventListener("click", (e) => {
+        document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("active"));
+        const target = e.currentTarget;
+        target.classList.add("active");
+        const hex = target.dataset.color;
+        if (this.view && hex) {
+          this.view.setVehicleColor(hex);
+        }
+      });
+    });
+
     /* Simulation Toggle */
     const simToggleBtn = document.getElementById("btn-toggle-sim");
     if (simToggleBtn) {
@@ -147,7 +160,7 @@ class App {
         </div>
         <div class="card-body">
           <span class="card-dist" id="card-dist-${i}">---<span class="card-unit">cm</span></span>
-          <span class="card-meta" id="card-meta-${i}">-- µs</span>
+          <span class="card-meta" id="card-meta-${i}">-- Âµs</span>
         </div>
       `;
       grid.appendChild(card);
@@ -189,7 +202,7 @@ class App {
           card.classList.add("status-blindzone", "prox-red");
         } else {
           statusEl.textContent = "OK";
-          metaEl.textContent = `${s.pulse_us} µs`;
+          metaEl.textContent = `${s.pulse_us} Âµs`;
           if (s.distance_cm <= this.view.threshRed) {
             card.classList.add("prox-red");
           } else if (s.distance_cm <= this.view.threshYellow) {
