@@ -1,4 +1,4 @@
-import { VehicleView } from "./vehicle_view.js?v=1.2.0";
+import { VehicleView } from "./vehicle_view.js?v=1.3.0";
 import { TelemetryClient } from "./telemetry.js";
 import { MockTelemetryGenerator } from "./mock_generator.js";
 
@@ -208,7 +208,7 @@ class App {
           card.classList.add("status-blindzone", "prox-red");
         } else {
           statusEl.textContent = "OK";
-          metaEl.textContent = `${s.pulse_us} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs`;
+          metaEl.textContent = s.pulse_us + " µs";
           if (s.distance_cm <= this.view.threshRed) {
             card.classList.add("prox-red");
           } else if (s.distance_cm <= this.view.threshYellow) {

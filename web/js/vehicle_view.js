@@ -29,8 +29,8 @@ export class VehicleView {
     
     /* Three.js Scene Setup */
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0a0e17);
-    this.scene.fog = new THREE.FogExp2(0x0a0e17, 0.04);
+    this.scene.background = new THREE.Color(0xffffff);
+    this.scene.fog = new THREE.Fog(0xffffff, 35, 95);
     
     /* Camera */
     const width = this.canvas.clientWidth || window.innerWidth || 800;
@@ -50,6 +50,7 @@ export class VehicleView {
     });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setClearColor(0xffffff, 1.0);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -93,38 +94,38 @@ export class VehicleView {
   }
 
   setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.35);
     this.scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    keyLight.position.set(8, 16, 10);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.9);
+    keyLight.position.set(10, 20, 12);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
     keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 40;
-    keyLight.shadow.camera.left = -6;
-    keyLight.shadow.camera.right = 6;
-    keyLight.shadow.camera.top = 6;
-    keyLight.shadow.camera.bottom = -6;
+    keyLight.shadow.camera.far = 50;
+    keyLight.shadow.camera.left = -8;
+    keyLight.shadow.camera.right = 8;
+    keyLight.shadow.camera.top = 8;
+    keyLight.shadow.camera.bottom = -8;
     keyLight.shadow.bias = -0.0001;
     keyLight.shadow.normalBias = 0.02;
     this.scene.add(keyLight);
 
-    const frontFill = new THREE.DirectionalLight(0xe8f0fe, 1.2);
-    frontFill.position.set(0, 5, -12);
+    const frontFill = new THREE.DirectionalLight(0xe2e8f0, 0.9);
+    frontFill.position.set(0, 6, -15);
     this.scene.add(frontFill);
 
-    const rearFill = new THREE.DirectionalLight(0xffebee, 1.0);
-    rearFill.position.set(0, 5, 12);
+    const rearFill = new THREE.DirectionalLight(0xe2e8f0, 0.9);
+    rearFill.position.set(0, 6, 15);
     this.scene.add(rearFill);
 
-    const leftRim = new THREE.DirectionalLight(0x00b0ff, 0.8);
-    leftRim.position.set(-10, 5, 0);
+    const leftRim = new THREE.DirectionalLight(0x93c5fd, 0.5);
+    leftRim.position.set(-12, 6, 0);
     this.scene.add(leftRim);
 
-    const rightRim = new THREE.DirectionalLight(0x00b0ff, 0.8);
-    rightRim.position.set(10, 5, 0);
+    const rightRim = new THREE.DirectionalLight(0x93c5fd, 0.5);
+    rightRim.position.set(12, 6, 0);
     this.scene.add(rightRim);
   }
 
@@ -217,24 +218,149 @@ export class VehicleView {
   }
 
   setupGroundAndRings() {
-    /* Ground Grid */
-    const gridHelper = new THREE.GridHelper(16, 32, 0x1e293b, 0x0f172a);
-    gridHelper.position.y = -0.01;
+    /* 1. Surrounding Infinite White Ground */
+    const groundGeo = new THREE.PlaneGeometry(180, 180);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.95,
+      metalness: 0.0
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.002;
+    ground.receiveShadow = true;
+    this.scene.add(ground);
+
+    /* 2. Soft Architecture/Spatial Scale Grid */
+    const gridHelper = new THREE.GridHelper(120, 60, 0xd8e1ec, 0xeef2f7);
+    gridHelper.position.y = 0.0005;
     this.scene.add(gridHelper);
 
-    /* Concentric Range Rings (1m, 2m, 3m, 4m) */
+    /* 3. Main Asphalt Roadway (Length = 100m, Width = 8.4m) */
+    const roadLength = 100.0;
+    const roadWidth = 8.4;
+    const roadGeo = new THREE.PlaneGeometry(roadWidth, roadLength);
+    const roadMat = new THREE.MeshStandardMaterial({
+      color: 0x22262e,
+      roughness: 0.85,
+      metalness: 0.12
+    });
+    const road = new THREE.Mesh(roadGeo, roadMat);
+    road.rotation.x = -Math.PI / 2;
+    road.position.set(0, 0.002, 0);
+    road.receiveShadow = true;
+    this.scene.add(road);
+
+    /* 4. Concrete Sidewalks & Granite Curb Edges */
+    const sidewalkWidth = 3.6;
+    const sidewalkHeight = 0.08;
+    const sidewalkMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.75,
+      metalness: 0.05
+    });
+    const curbMat = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      roughness: 0.6,
+      metalness: 0.1
+    });
+
+    [-1, 1].forEach((side) => {
+      // Sidewalk slab
+      const swGeo = new THREE.BoxGeometry(sidewalkWidth, sidewalkHeight, roadLength);
+      const sw = new THREE.Mesh(swGeo, sidewalkMat);
+      sw.position.set(side * (roadWidth * 0.5 + sidewalkWidth * 0.5), sidewalkHeight * 0.5, 0);
+      sw.receiveShadow = true;
+      this.scene.add(sw);
+
+      // Granite curb stone along road edge
+      const curbGeo = new THREE.BoxGeometry(0.16, sidewalkHeight + 0.01, roadLength);
+      const curb = new THREE.Mesh(curbGeo, curbMat);
+      curb.position.set(side * (roadWidth * 0.5 + 0.08), (sidewalkHeight + 0.01) * 0.5, 0);
+      curb.receiveShadow = true;
+      this.scene.add(curb);
+    });
+
+    /* 5. Road Markings (Solid Shoulders, Center Dashes, Stop Bar, Zebra Crossing) */
+    const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+    // Outer Solid White Boundary Lines
+    [-3.8, 3.8].forEach((xPos) => {
+      const lineGeo = new THREE.PlaneGeometry(0.16, roadLength);
+      const line = new THREE.Mesh(lineGeo, lineMat);
+      line.rotation.x = -Math.PI / 2;
+      line.position.set(xPos, 0.004, 0);
+      this.scene.add(line);
+    });
+
+    // Center Dashed White Lane Divider
+    const dashLength = 2.6;
+    const dashGap = 3.4;
+    const step = dashLength + dashGap;
+    for (let z = -roadLength * 0.45; z <= roadLength * 0.45; z += step) {
+      // Skip dashes inside pedestrian crosswalk zone
+      if (z >= -13.5 && z <= -7.0) continue;
+      const dashGeo = new THREE.PlaneGeometry(0.16, dashLength);
+      const dash = new THREE.Mesh(dashGeo, lineMat);
+      dash.rotation.x = -Math.PI / 2;
+      dash.position.set(0, 0.004, z);
+      this.scene.add(dash);
+    }
+
+    // Transverse Stop Line (ahead of car at Z = -7.4m)
+    const stopLineGeo = new THREE.PlaneGeometry(roadWidth * 0.88, 0.40);
+    const stopLine = new THREE.Mesh(stopLineGeo, lineMat);
+    stopLine.rotation.x = -Math.PI / 2;
+    stopLine.position.set(0, 0.004, -7.4);
+    this.scene.add(stopLine);
+
+    // Pedestrian Zebra Crossing (Z = -9.0m to -12.4m)
+    for (let z = -9.0; z >= -12.4; z -= 0.82) {
+      const stripeGeo = new THREE.PlaneGeometry(roadWidth * 0.86, 0.44);
+      const stripe = new THREE.Mesh(stripeGeo, lineMat);
+      stripe.rotation.x = -Math.PI / 2;
+      stripe.position.set(0, 0.004, z);
+      this.scene.add(stripe);
+    }
+
+    // Lane Straight Arrows (Ahead of car in both lanes: Left lane X = -1.9, Right lane X = 1.9)
+    [-1.9, 1.9].forEach((laneX) => {
+      [-4.5, 12.0].forEach((arrowZ) => {
+        // Arrow shaft
+        const shaftGeo = new THREE.PlaneGeometry(0.18, 1.4);
+        const shaft = new THREE.Mesh(shaftGeo, lineMat);
+        shaft.rotation.x = -Math.PI / 2;
+        shaft.position.set(laneX, 0.004, arrowZ);
+        this.scene.add(shaft);
+
+        // Arrow head (triangular plane)
+        const headGeo = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+          0, 0.004, -0.6,
+          -0.40, 0.004, 0.0,
+          0.40, 0.004, 0.0
+        ]);
+        headGeo.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+        const head = new THREE.Mesh(headGeo, lineMat);
+        head.position.set(laneX, 0, arrowZ - 0.70);
+        this.scene.add(head);
+      });
+    });
+
+    /* 6. Concentric Range Rings (1m, 2m, 3m, 4m) - Sleek High-Contrast Cyan */
     const ranges = [1.0, 2.0, 3.0, 4.0];
     ranges.forEach((r) => {
-      const ringGeo = new THREE.RingGeometry(r - 0.015, r + 0.015, 64);
+      const ringGeo = new THREE.RingGeometry(r - 0.018, r + 0.018, 64);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x334155,
+        color: 0x0284c7,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.45
+        opacity: 0.60,
+        depthWrite: false
       });
       const ring = new THREE.Mesh(ringGeo, ringMat);
       ring.rotation.x = -Math.PI / 2;
-      ring.position.y = 0.005;
+      ring.position.y = 0.006;
       this.scene.add(ring);
     });
   }

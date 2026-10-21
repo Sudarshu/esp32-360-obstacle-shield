@@ -1,8 +1,8 @@
 :root {
-  --bg-primary: #0a0e17;
-  --bg-secondary: #131b2e;
-  --bg-card: rgba(19, 27, 46, 0.85);
-  --border-color: rgba(255, 255, 255, 0.12);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: rgba(15, 23, 42, 0.88);
+  --border-color: rgba(255, 255, 255, 0.15);
   --text-primary: #f0f4fc;
   --text-secondary: #8a9bb8;
   --text-muted: #53627c;
@@ -74,7 +74,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 8px 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
 
 .brand-section {
@@ -200,7 +200,7 @@ body {
   padding: 8px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
 
 .cam-btn {
@@ -240,7 +240,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
 
 .radar-title {
@@ -283,7 +283,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.22);
   max-height: 40vh;
   overflow-y: auto;
 }
