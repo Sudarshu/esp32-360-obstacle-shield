@@ -51,7 +51,7 @@ export class VehicleView {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     /* Groups */
     this.vehicleGroup = new THREE.Group();
@@ -106,6 +106,8 @@ export class VehicleView {
     keyLight.shadow.camera.right = 6;
     keyLight.shadow.camera.top = 6;
     keyLight.shadow.camera.bottom = -6;
+    keyLight.shadow.bias = -0.0001;
+    keyLight.shadow.normalBias = 0.02;
     this.scene.add(keyLight);
 
     const frontFill = new THREE.DirectionalLight(0xe8f0fe, 1.2);
@@ -137,15 +139,28 @@ export class VehicleView {
 
         const carModel = gltf.scene;
 
+        const texLoader = new THREE.TextureLoader();
+        const carTexture = texLoader.load("./assets/models/textures/gltf_embedded_1.png");
+        carTexture.flipY = false;
+        if (THREE.SRGBColorSpace) {
+          carTexture.colorSpace = THREE.SRGBColorSpace;
+        }
+
         carModel.traverse((node) => {
           if (node.isMesh) {
-            // Hide floating 2D watermark plane if present
             if (node.geometry && node.geometry.attributes.position && node.geometry.attributes.position.count <= 6) {
               node.visible = false;
             } else {
               node.castShadow = true;
               node.receiveShadow = true;
               if (node.material) {
+                node.material.map = carTexture;
+                node.material.metalness = 0.25;
+                node.material.roughness = 0.45;
+                node.material.side = THREE.FrontSide;
+                node.material.alphaTest = 0;
+                node.material.transparent = false;
+                node.material.needsUpdate = true;
                 this.paintMaterials.push(node.material);
               }
             }
@@ -194,7 +209,7 @@ export class VehicleView {
       (xhr) => {
         if (xhr.lengthComputable) {
           const pct = Math.round((xhr.loaded / xhr.total) * 100);
-          console.log([VehicleView] Loading 3XO Model: %);
+          console.log("[VehicleView] Loading 3XO Model: " + pct + "%");
         }
       },
       (err) => {

@@ -1,4 +1,4 @@
-import { VehicleView } from "./vehicle_view.js";
+import { VehicleView } from "./vehicle_view.js?v=1.1.0";
 import { TelemetryClient } from "./telemetry.js";
 import { MockTelemetryGenerator } from "./mock_generator.js";
 
@@ -166,7 +166,7 @@ class App {
         </div>
         <div class="card-body">
           <span class="card-dist" id="card-dist-${i}">---<span class="card-unit">cm</span></span>
-          <span class="card-meta" id="card-meta-${i}">-- ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs</span>
+          <span class="card-meta" id="card-meta-${i}">-- &mu;s</span>
         </div>
       `;
       grid.appendChild(card);
