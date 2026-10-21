@@ -32,12 +32,13 @@ export class VehicleView {
     this.scene.fog = new THREE.FogExp2(0x0a0e17, 0.04);
     
     /* Camera */
-    const aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+    const width = this.canvas.clientWidth || window.innerWidth || 800;
+    const height = this.canvas.clientHeight || window.innerHeight || 600;
+    const aspect = width / height;
     this.camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100.0);
-    this.defaultCamPos = new THREE.Vector3(5.2, 5.2, 5.8);
-    this.camera.position.copy(this.defaultCamPos);
     this.cameraTarget = new THREE.Vector3(0, 0.6, 0);
-    this.camera.lookAt(this.cameraTarget);
+    this.spherical = { radius: 8.8, phi: Math.PI / 3.2, theta: Math.PI / 4.0 };
+    this.updateCameraFromSpherical();
     
     /* WebGL Renderer */
     this.renderer = new THREE.WebGLRenderer({
@@ -46,7 +47,7 @@ export class VehicleView {
       alpha: false,
       powerPreference: "high-performance"
     });
-    this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+    this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -872,13 +873,15 @@ export class VehicleView {
     }, { passive: false });
 
     /* Window Resize */
-    window.addEventListener("resize", () => {
-      const w = this.canvas.clientWidth;
-      const h = this.canvas.clientHeight;
+    const handleResize = () => {
+      const w = this.canvas.clientWidth || window.innerWidth || 800;
+      const h = this.canvas.clientHeight || window.innerHeight || 600;
       this.camera.aspect = w / h;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(w, h);
-    });
+    };
+    window.addEventListener("resize", handleResize);
+    setTimeout(handleResize, 100);
   }
 
   animate() {
