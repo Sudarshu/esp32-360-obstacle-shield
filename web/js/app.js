@@ -16,7 +16,13 @@ class App {
   async init() {
     /* Load configuration */
     try {
-      const resp = await fetch("../shared/sensor_config.json");
+      let resp;
+      try {
+        resp = await fetch("./sensor_config.json");
+      } catch (err) {}
+      if (!resp || !resp.ok) {
+        resp = await fetch("../shared/sensor_config.json");
+      }
       if (resp.ok) {
         this.config = await resp.json();
       }
@@ -160,7 +166,7 @@ class App {
         </div>
         <div class="card-body">
           <span class="card-dist" id="card-dist-${i}">---<span class="card-unit">cm</span></span>
-          <span class="card-meta" id="card-meta-${i}">-- Âµs</span>
+          <span class="card-meta" id="card-meta-${i}">-- Ã‚Âµs</span>
         </div>
       `;
       grid.appendChild(card);
@@ -202,7 +208,7 @@ class App {
           card.classList.add("status-blindzone", "prox-red");
         } else {
           statusEl.textContent = "OK";
-          metaEl.textContent = `${s.pulse_us} Âµs`;
+          metaEl.textContent = `${s.pulse_us} Ã‚Âµs`;
           if (s.distance_cm <= this.view.threshRed) {
             card.classList.add("prox-red");
           } else if (s.distance_cm <= this.view.threshYellow) {
